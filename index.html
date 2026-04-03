@@ -1,0 +1,2756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bhoomika Prasad — Aerospace Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #04060f;
+      --surface: #080d1a;
+      --surface2: #0d1526;
+      --border: rgba(14, 165, 233, 0.15);
+      --blue: #0ea5e9;
+      --cyan: #22d3ee;
+      --gold: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --dim: #94a3b8;
+      --font: 'Outfit', sans-serif;
+      --mono: 'Space Mono', monospace;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+
+    /* ─── Custom Cursor ────────────────────────────────────────────────────── */
+    #cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      background: var(--cyan);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.3s, height 0.3s, opacity 0.3s;
+      mix-blend-mode: screen;
+    }
+    #cursor-ring {
+      position: fixed;
+      width: 40px; height: 40px;
+      border: 1px solid rgba(34, 211, 238, 0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease-out, width 0.3s, height 0.3s, border-color 0.3s;
+    }
+    body:hover #cursor { opacity: 1; }
+
+    /* ─── Canvas ───────────────────────────────────────────────────────────── */
+    #bg-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ─── Dark veil between canvas and content ─────────────────────────────── */
+    /* Dims the 3D scene so text stays readable without killing the atmosphere  */
+    #bg-veil {
+      position: fixed;
+      inset: 0;
+      /* Solid centre fade out toward edges so the space scene peeks through */
+      background: radial-gradient(
+        ellipse 140% 120% at 50% 40%,
+        rgba(4,6,15,0.72) 0%,
+        rgba(4,6,15,0.58) 45%,
+        rgba(4,6,15,0.35) 100%
+      );
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ─── Noise overlay ────────────────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ─── Nav ──────────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.25rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(to bottom, rgba(4,6,15,0.95) 0%, transparent 100%);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(14,165,233,0.08);
+    }
+
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.06em;
+      text-decoration: none;
+      font-style: italic;
+    }
+
+    .nav-logo span {
+      color: var(--cyan);
+      font-style: normal;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--dim);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--cyan);
+      transition: width 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ─── Sections ─────────────────────────────────────────────────────────── */
+    section {
+      position: relative;
+      z-index: 2;
+      padding: 8rem 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2.5rem;
+    }
+
+    /* ─── Section Label ────────────────────────────────────────────────────── */
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--cyan);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-label::before {
+      content: '';
+      width: 2rem;
+      height: 1px;
+      background: var(--cyan);
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #ffffff 0%, #bfefff 60%, #67e8f9 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ─── HERO ─────────────────────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      padding: 0 2.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      padding-top: 6rem;
+    }
+
+    .hero-content { max-width: 560px; }
+
+    .hero-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(14,165,233,0.08);
+      border: 1px solid rgba(14,165,233,0.2);
+      border-radius: 100px;
+      padding: 0.4rem 1rem;
+      font-size: 0.75rem;
+      color: var(--cyan);
+      font-family: var(--mono);
+      letter-spacing: 0.1em;
+      margin-bottom: 2rem;
+      animation: fadeSlideUp 1s ease 0.2s both;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero-name {
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      margin-bottom: 0.5rem;
+      animation: fadeSlideUp 1s ease 0.35s both;
+      color: #ffffff;
+    }
+
+    .hero-name span {
+      display: block;
+      background: linear-gradient(135deg, #38bdf8 0%, #22d3ee 45%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-nickname {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+      margin-bottom: 1.75rem;
+      animation: fadeSlideUp 1s ease 0.45s both;
+    }
+
+    .hero-tagline {
+      font-size: 1.1rem;
+      color: var(--dim);
+      line-height: 1.65;
+      max-width: 480px;
+      margin-bottom: 2.5rem;
+      animation: fadeSlideUp 1s ease 0.55s both;
+    }
+
+    .hero-tagline strong { color: var(--text); font-weight: 600; }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      animation: fadeSlideUp 1s ease 0.65s both;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 100%);
+      color: #04060f;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      padding: 0.85rem 2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 30px rgba(14,165,233,0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 50px rgba(14,165,233,0.5);
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      color: var(--dim);
+      font-weight: 500;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      padding: 0.85rem 2rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover {
+      color: var(--text);
+      border-color: rgba(14,165,233,0.4);
+      background: rgba(14,165,233,0.05);
+    }
+
+    /* Hero Photo */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: fadeSlideUp 1s ease 0.5s both;
+    }
+
+    .hero-photo-wrapper {
+      width: 480px;
+      height: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .hero-photo {
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      object-fit: cover;
+      display: block;
+      filter: drop-shadow(0 24px 50px rgba(0, 0, 0, 0.35));
+    }
+
+    /* ─── About ────────────────────────────────────────────────────────────── */
+    #about {
+      background: linear-gradient(180deg, transparent 0%, rgba(14,165,233,0.02) 50%, transparent 100%);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .about-text p {
+      color: var(--dim);
+      line-height: 1.8;
+      font-size: 1.05rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .about-text p strong { color: var(--text); }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 2rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .stat-card:hover {
+      border-color: rgba(14,165,233,0.35);
+      transform: translateY(-3px);
+    }
+
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .stat-lbl {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* About visual */
+    .about-visual {
+      position: relative;
+    }
+
+    .tech-orbit {
+      position: relative;
+      width: 360px;
+      height: 360px;
+      margin: 0 auto;
+    }
+
+    .orbit-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      box-shadow: 0 0 40px rgba(14,165,233,0.4);
+      z-index: 3;
+    }
+
+    .orbit-ring {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(14,165,233,0.12);
+      border-radius: 50%;
+      animation: orbit-spin linear infinite;
+    }
+
+    .orbit-ring:nth-child(2) {
+      width: 160px; height: 160px;
+      animation-duration: 8s;
+    }
+
+    .orbit-ring:nth-child(3) {
+      width: 250px; height: 250px;
+      animation-duration: 14s;
+      animation-direction: reverse;
+    }
+
+    .orbit-ring:nth-child(4) {
+      width: 340px; height: 340px;
+      animation-duration: 20s;
+    }
+
+    @keyframes orbit-spin {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to   { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .orbit-item {
+      position: absolute;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      top: 50%; left: 50%;
+      cursor: default;
+    }
+
+    /* ─── Skills ───────────────────────────────────────────────────────────── */
+    #skills .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .skill-category {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skill-category::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--blue), var(--cyan), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .skill-category:hover {
+      border-color: rgba(14,165,233,0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .skill-category:hover::before { opacity: 1; }
+
+    .skill-cat-icon {
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .skill-cat-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 1.25rem;
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .skill-tag {
+      background: rgba(14,165,233,0.07);
+      border: 1px solid rgba(14,165,233,0.15);
+      color: var(--dim);
+      font-size: 0.75rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+      font-family: var(--mono);
+      transition: all 0.2s;
+    }
+
+    .skill-tag:hover {
+      background: rgba(14,165,233,0.15);
+      color: var(--text);
+      border-color: rgba(14,165,233,0.35);
+    }
+
+    /* ─── Experience ───────────────────────────────────────────────────────── */
+    #experience .timeline {
+      position: relative;
+      margin-top: 3.5rem;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(180deg, var(--cyan), rgba(14,165,233,0.1));
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 3rem;
+      padding-bottom: 4rem;
+      position: relative;
+      padding-left: 2px;
+    }
+
+    .timeline-item:last-child { padding-bottom: 0; }
+
+    .timeline-dot {
+      position: absolute;
+      left: -6px;
+      top: 6px;
+      width: 13px; height: 13px;
+      border-radius: 50%;
+      background: var(--cyan);
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 12px var(--cyan);
+      z-index: 1;
+    }
+
+    .timeline-meta {
+      padding-left: 2rem;
+    }
+
+    .timeline-period {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--cyan);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-location {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .timeline-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      transition: border-color 0.3s;
+    }
+
+    .timeline-card:hover {
+      border-color: rgba(14,165,233,0.3);
+    }
+
+    .timeline-role {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .timeline-org {
+      font-size: 0.9rem;
+      color: var(--cyan);
+      margin-bottom: 1rem;
+    }
+
+    .timeline-desc {
+      color: var(--dim);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .timeline-bullets {
+      list-style: none;
+      margin-top: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .timeline-bullets li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      color: var(--dim);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .timeline-bullets li::before {
+      content: '▸';
+      color: var(--cyan);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ─── Projects ─────────────────────────────────────────────────────────── */
+    #projects .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: visible;
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+      position: relative;
+    }
+
+    .project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+      border-color: rgba(14,165,233,0.35);
+    }
+
+    .project-card.featured {
+      grid-column: 1 / -1;
+    }
+
+    .project-content {
+      padding: 2rem;
+    }
+
+    .project-card.featured .project-content {
+      padding: 2.5rem;
+    }
+
+    /* ── Gallery trigger button ─────────────────────────────────────────── */
+    .gallery-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(14,165,233,0.08);
+      border: 1px solid rgba(14,165,233,0.18);
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      z-index: 3;
+      flex-shrink: 0;
+    }
+
+    .gallery-btn:hover {
+      background: rgba(14,165,233,0.18);
+      border-color: rgba(14,165,233,0.45);
+      transform: scale(1.08);
+      box-shadow: 0 0 18px rgba(14,165,233,0.25);
+    }
+
+    .gallery-btn svg { display: block; }
+
+    .gallery-btn .img-count {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 18px;
+      height: 18px;
+      background: var(--cyan);
+      color: #04060f;
+      border-radius: 50%;
+      font-size: 0.6rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+    }
+
+    .gallery-btn.empty {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .gallery-btn.empty:hover {
+      background: rgba(14,165,233,0.08);
+      border-color: rgba(14,165,233,0.18);
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ── Lightbox ───────────────────────────────────────────────────────── */
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    #lightbox.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .lb-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(2, 4, 12, 0.92);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      cursor: pointer;
+    }
+
+    .lb-shell {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 900px;
+      padding: 0 1.5rem;
+      gap: 1.25rem;
+    }
+
+    /* top bar: counter + close */
+    .lb-topbar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .lb-counter {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+    }
+
+    .lb-close {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--dim);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .lb-close:hover {
+      background: rgba(255,255,255,0.12);
+      color: var(--text);
+    }
+
+    /* image stage */
+    .lb-stage {
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lb-image-wrap {
+      max-height: 68vh;
+      max-width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(14,165,233,0.12);
+      box-shadow: 0 40px 120px rgba(0,0,0,0.7);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .lb-image-wrap.sliding { opacity: 0; transform: scale(0.96); }
+
+    .lb-image-wrap img {
+      max-height: 68vh;
+      max-width: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    /* empty state */
+    .lb-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 4rem 2rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .lb-empty svg { opacity: 0.3; }
+    .lb-empty h3 { font-size: 1rem; color: var(--dim); font-weight: 600; }
+    .lb-empty p  { font-size: 0.8rem; line-height: 1.6; max-width: 260px; }
+
+    /* nav arrows */
+    .lb-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(14,6,30,0.75);
+      border: 1px solid rgba(14,165,233,0.2);
+      color: var(--dim);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+      z-index: 2;
+    }
+
+    .lb-arrow:hover {
+      background: rgba(14,165,233,0.15);
+      color: var(--cyan);
+      border-color: rgba(14,165,233,0.45);
+    }
+
+    .lb-arrow.prev { left: -22px; }
+    .lb-arrow.next { right: -22px; }
+
+    .lb-arrow:disabled, .lb-arrow[disabled] {
+      opacity: 0.2;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* caption */
+    .lb-caption {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+      min-height: 1.2em;
+      letter-spacing: 0.03em;
+    }
+
+    /* dot strip */
+    .lb-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .lb-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      transition: background 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+
+    .lb-dot.active {
+      background: var(--cyan);
+      transform: scale(1.3);
+    }
+
+    .project-badge {
+      display: inline-block;
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.2);
+      color: var(--gold);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      border-radius: 100px;
+      margin-bottom: 1rem;
+    }
+
+    .project-badge.blue {
+      background: rgba(14,165,233,0.1);
+      border-color: rgba(14,165,233,0.2);
+      color: var(--cyan);
+    }
+
+    .project-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 0.75rem;
+    }
+
+    .project-card.featured .project-title {
+      font-size: 1.5rem;
+    }
+
+    .project-desc {
+      color: var(--dim);
+      font-size: 0.875rem;
+      line-height: 1.7;
+      margin-bottom: 1.25rem;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .project-tag {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+    }
+
+    /* ─── Publications ─────────────────────────────────────────────────────── */
+    #publications .pub-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-top: 3rem;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 2.5rem;
+      align-items: center;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    #publications .pub-card:hover {
+      border-color: rgba(14,165,233,0.3);
+      transform: translateY(-3px);
+    }
+
+    .pub-year {
+      font-family: var(--mono);
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: rgba(14,165,233,0.2);
+      line-height: 1;
+      min-width: 80px;
+    }
+
+    .pub-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+    }
+
+    .pub-venue {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.75rem;
+    }
+
+    .pub-desc {
+      color: var(--dim);
+      font-size: 0.875rem;
+      line-height: 1.65;
+    }
+
+    .pub-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      text-align: center;
+    }
+
+    .pub-badge .badge-icon {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05));
+      border: 1px solid rgba(245,158,11,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .pub-badge span {
+      font-size: 0.65rem;
+      color: var(--gold);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* ─── Education ────────────────────────────────────────────────────────── */
+    #education .edu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .edu-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 2.25rem;
+      transition: border-color 0.3s, transform 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .edu-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(14,165,233,0.06), transparent);
+      transform: translate(30px, 30px);
+    }
+
+    .edu-card.active {
+      border-color: rgba(14,165,233,0.3);
+    }
+
+    .edu-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .edu-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+    }
+
+    .edu-badge.current {
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.2);
+      color: #22c55e;
+    }
+
+    .edu-badge.complete {
+      background: rgba(14,165,233,0.08);
+      border: 1px solid rgba(14,165,233,0.15);
+      color: var(--cyan);
+    }
+
+    .edu-degree {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 0.4rem;
+    }
+
+    .edu-uni {
+      font-size: 0.9rem;
+      color: var(--cyan);
+      margin-bottom: 0.25rem;
+    }
+
+    .edu-period {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .edu-detail {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--dim);
+    }
+
+    .edu-cgpa {
+      font-family: var(--mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--gold), #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ─── Certifications ───────────────────────────────────────────────────── */
+    #certifications .cert-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+
+    .cert-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .cert-item:hover {
+      border-color: rgba(14,165,233,0.3);
+      transform: translateY(-3px);
+    }
+
+    .cert-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: rgba(14,165,233,0.08);
+      border: 1px solid rgba(14,165,233,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .cert-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .cert-source {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ─── Contact ──────────────────────────────────────────────────────────── */
+    #contact {
+      text-align: center;
+      padding-bottom: 10rem;
+    }
+
+    .contact-wrapper {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .contact-big {
+      font-family: var(--serif);
+      font-size: clamp(3.2rem, 7.5vw, 6rem);
+      font-weight: 600;
+      font-style: italic;
+      letter-spacing: -0.01em;
+      line-height: 1.0;
+      margin-bottom: 1.5rem;
+    }
+
+    .contact-sub {
+      color: var(--dim);
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 3rem;
+    }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 4rem;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--dim);
+      font-size: 0.875rem;
+      padding: 0.85rem 1.5rem;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .contact-link:hover {
+      color: var(--text);
+      border-color: rgba(14,165,233,0.35);
+      background: rgba(14,165,233,0.05);
+      transform: translateY(-2px);
+    }
+
+    /* ─── Footer ───────────────────────────────────────────────────────────── */
+    footer {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      padding: 2rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    footer p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    /* ─── Animations ───────────────────────────────────────────────────────── */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── Scrollbar ────────────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(14,165,233,0.3);
+      border-radius: 2px;
+    }
+
+    /* ─── Responsive ───────────────────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-visual { order: -1; }
+      .hero-photo-wrapper { width: 320px; height: 320px; }
+      .about-grid { grid-template-columns: 1fr; }
+      .tech-orbit { display: none; }
+      #skills .skills-grid { grid-template-columns: 1fr 1fr; }
+      .timeline-item { grid-template-columns: 140px 1fr; gap: 1.5rem; }
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      section { padding: 5rem 0; }
+      .container { padding: 0 1.5rem; }
+      #skills .skills-grid { grid-template-columns: 1fr; }
+      .timeline-item { grid-template-columns: 1fr; gap: 0.75rem; }
+      .timeline-meta { padding-left: 2rem; }
+      #projects .projects-grid { grid-template-columns: 1fr; }
+      #education .edu-grid { grid-template-columns: 1fr; }
+      .cert-grid { grid-template-columns: 1fr 1fr; }
+      #publications .pub-card {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .pub-year { font-size: 1.5rem; }
+    }
+
+    /* ─── Divider ──────────────────────────────────────────────────────────── */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(14,165,233,0.15), transparent);
+      margin: 0;
+    }
+
+    /* ─── Scroll indicator ─────────────────────────────────────────────────── */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.65rem;
+      font-family: var(--mono);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      animation: fadeSlideUp 1s ease 1.2s both;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--cyan), transparent);
+      animation: scrollLine 1.5s ease-in-out infinite;
+    }
+
+    @keyframes scrollLine {
+      0% { transform: scaleY(0); transform-origin: top; }
+      50% { transform: scaleY(1); transform-origin: top; }
+      51% { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* HUD lines */
+    .hud-line {
+      position: absolute;
+      background: rgba(14,165,233,0.08);
+      pointer-events: none;
+    }
+    .hud-h { left: 0; right: 0; height: 1px; }
+    .hud-v { top: 0; bottom: 0; width: 1px; }
+  </style>
+</head>
+
+<body>
+  <!-- Canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Dark veil — dims 3D scene so text is legible -->
+  <div id="bg-veil"></div>
+
+  <!-- Cursor -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="#hero" class="nav-logo">Bhoomika <span>Prasad</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#publications">Research</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── HERO ────────────────────────────────────────────────────────────── -->
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-status">
+          <span class="status-dot"></span>
+          Currently: Master's @ University of Sydney
+        </div>
+
+        <h1 class="hero-name">
+          Bhoomika
+          <span>Prasad</span>
+        </h1>
+        <p class="hero-nickname">Bhoomi &nbsp;·&nbsp; Aerospace Engineer</p>
+
+        <p class="hero-tagline">
+          Pushing the boundaries of <strong>hypersonic aerodynamics</strong>,
+          <strong>UAV development</strong>, and multidisciplinary engineering systems.
+          From Mach 5+ waveriders to structural analysis — engineering the future of flight.
+        </p>
+
+        <div class="hero-ctas">
+          <a href="#projects" class="btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            View My Work
+          </a>
+          <a href="#contact" class="btn-outline">
+            Get in Touch →
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-photo-wrapper">
+          <img class="hero-photo" src="https://i.postimg.cc/B6mgV73g/Untitled-design.jpg" alt="Bhoomika Prasad" />
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-indicator">
+      <div class="scroll-line"></div>
+      Scroll to explore
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── ABOUT ───────────────────────────────────────────────────────────── -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid reveal">
+        <div class="about-text">
+          <div class="section-label">Who I am</div>
+          <h2 class="section-title">Aerospace Engineer.<br/>Researcher.<br/>Builder.</h2>
+          <p>
+            I'm <strong style="font-family:var(--serif);font-style:italic;font-size:1.05em;">Bhoomika Prasad</strong>, an Aerospace Engineering postgraduate at the
+            University of Sydney, specializing in <strong>hypersonic aerodynamics</strong>,
+            computational fluid dynamics, and multidisciplinary engineering systems.
+          </p>
+          <p>
+            My journey spans from conceptual design of <strong>hypersonic waveriders at IISc</strong>
+            to hands-on UAV construction with full structural and electrical integration. I've published
+            research at the <strong>25th AIAA International Space Planes and Hypersonic Systems Conference</strong>
+            and contributed to cutting-edge projects at some of India's finest research institutions.
+          </p>
+          <p>
+            I thrive at the intersection of theory and practice — running CFD simulations,
+            optimizing aerodynamic geometries, and building things that actually fly.
+          </p>
+
+          <div class="about-stats">
+            <div class="stat-card">
+              <div class="stat-num">9.12</div>
+              <div class="stat-lbl">CGPA · B.Tech</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num">1</div>
+              <div class="stat-lbl">AIAA Publication</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num">2</div>
+              <div class="stat-lbl">UAVs Built</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num">Mach 5+</div>
+              <div class="stat-lbl">Research Focus</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Orbital Skills Visualization -->
+        <div class="about-visual">
+          <div class="tech-orbit">
+            <div class="orbit-ring"></div>
+            <div class="orbit-ring" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:160px;height:160px;border:1px solid rgba(14,165,233,0.12);border-radius:50%;animation:orbit-spin 8s linear infinite;">
+              <div class="orbit-item" style="top:0;left:50%;transform:translate(-50%,-50%);">🛩</div>
+              <div class="orbit-item" style="bottom:0;left:50%;transform:translate(-50%,50%);">⚡</div>
+            </div>
+            <div class="orbit-ring" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:260px;height:260px;border:1px solid rgba(14,165,233,0.08);border-radius:50%;animation:orbit-spin 14s linear infinite reverse;">
+              <div class="orbit-item" style="top:0;left:50%;transform:translate(-50%,-50%);">🔬</div>
+              <div class="orbit-item" style="bottom:0;left:50%;transform:translate(-50%,50%);">📐</div>
+              <div class="orbit-item" style="top:50%;right:0;transform:translate(50%,-50%);">🖥</div>
+            </div>
+            <div class="orbit-ring" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:356px;height:356px;border:1px solid rgba(14,165,233,0.05);border-radius:50%;animation:orbit-spin 22s linear infinite;">
+              <div class="orbit-item" style="top:0;left:50%;transform:translate(-50%,-50%);">🚀</div>
+              <div class="orbit-item" style="bottom:0;left:50%;transform:translate(-50%,50%);">🛸</div>
+              <div class="orbit-item" style="top:50%;left:0;transform:translate(-50%,-50%);">🌌</div>
+              <div class="orbit-item" style="top:50%;right:0;transform:translate(50%,-50%);">⚙</div>
+            </div>
+            <div class="orbit-center">✈</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── SKILLS ──────────────────────────────────────────────────────────── -->
+  <section id="skills">
+    <div class="container">
+      <div class="section-label reveal">Technical Arsenal</div>
+      <h2 class="section-title reveal">Skills & Tools</h2>
+
+      <div class="skills-grid reveal">
+        <div class="skill-category">
+          <div class="skill-cat-icon">🔭</div>
+          <div class="skill-cat-title">Simulation & Analysis</div>
+          <div class="skill-tags">
+            <span class="skill-tag">ANSYS Workbench</span>
+            <span class="skill-tag">ICEM CFD</span>
+            <span class="skill-tag">ANSYS Fluent</span>
+            <span class="skill-tag">Tecplot</span>
+            <span class="skill-tag">GasTurb</span>
+            <span class="skill-tag">MATLAB</span>
+          </div>
+        </div>
+
+        <div class="skill-category">
+          <div class="skill-cat-icon">✏️</div>
+          <div class="skill-cat-title">CAD & Structural Tools</div>
+          <div class="skill-tags">
+            <span class="skill-tag">CATIA V5</span>
+            <span class="skill-tag">MSC Patran</span>
+            <span class="skill-tag">NASTRAN</span>
+            <span class="skill-tag">Strand7</span>
+            <span class="skill-tag">SolidWorks</span>
+          </div>
+        </div>
+
+        <div class="skill-category">
+          <div class="skill-cat-icon">💻</div>
+          <div class="skill-cat-title">Programming & Tools</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">Simulink</span>
+            <span class="skill-tag">GitHub</span>
+            <span class="skill-tag">LaTeX</span>
+            <span class="skill-tag">Microsoft Office</span>
+          </div>
+        </div>
+
+        <div class="skill-category">
+          <div class="skill-cat-icon">🛸</div>
+          <div class="skill-cat-title">Aerospace Domains</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Hypersonic Aerodynamics</span>
+            <span class="skill-tag">CFD</span>
+            <span class="skill-tag">UAV Design</span>
+            <span class="skill-tag">Structural Analysis</span>
+            <span class="skill-tag">Shock Wave Physics</span>
+            <span class="skill-tag">Propulsion</span>
+          </div>
+        </div>
+
+        <div class="skill-category">
+          <div class="skill-cat-icon">🔩</div>
+          <div class="skill-cat-title">Engineering Experience</div>
+          <div class="skill-tags">
+            <span class="skill-tag">FEA</span>
+            <span class="skill-tag">CAD Layout Design</span>
+            <span class="skill-tag">Mechanical Systems</span>
+            <span class="skill-tag">Electrical Integration</span>
+            <span class="skill-tag">System Diagnostics</span>
+          </div>
+        </div>
+
+        <div class="skill-category">
+          <div class="skill-cat-icon">📊</div>
+          <div class="skill-cat-title">Research & Data</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Data Scraping</span>
+            <span class="skill-tag">Trend Analysis</span>
+            <span class="skill-tag">Excel Datasets</span>
+            <span class="skill-tag">Technical Writing</span>
+            <span class="skill-tag">Literature Review</span>
+            <span class="skill-tag">Reporting Tools</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── EXPERIENCE ──────────────────────────────────────────────────────── -->
+  <section id="experience">
+    <div class="container">
+      <div class="section-label reveal">Career Journey</div>
+      <h2 class="section-title reveal">Experience</h2>
+
+      <div class="timeline reveal">
+        <!-- IISc Research -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-meta">
+            <div class="timeline-period">Jun 2023 — Apr 2024</div>
+            <div class="timeline-location">Bengaluru, India</div>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-role">Research Intern — Hypersonic Vehicle Design</div>
+            <div class="timeline-org">Indian Institute of Science (IISc)</div>
+            <ul class="timeline-bullets">
+              <li>Collaborated with researchers on conceptual design of a hypersonic waverider and its inlet system</li>
+              <li>Analyzed flow characteristics at high Mach numbers and optimized vehicle geometry for shock wave attachment</li>
+              <li>Contributed to aerodynamic theory application, literature review, and design evaluation for high-speed flight conditions</li>
+              <li>Design evaluation focused on performance at sustained hypersonic cruise conditions</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Handle Properties -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-meta">
+            <div class="timeline-period">Nov 2024 — Mar 2025</div>
+            <div class="timeline-location">Sydney, Australia</div>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-role">Data Analyst Intern</div>
+            <div class="timeline-org">Handle Properties</div>
+            <ul class="timeline-bullets">
+              <li>Gained hands-on experience in property market analytics at this early-stage startup</li>
+              <li>Contributed to data scraping, trend identification, and client profiling workflows</li>
+              <li>Supported the digital team with content curation and social media performance tracking</li>
+              <li>Managed and organized large datasets using Microsoft Excel; assisted in creating internal reporting tools</li>
+              <li>Acted as bridge between data operations and client-facing communications</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Inline Systems -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-meta">
+            <div class="timeline-period">Internship</div>
+            <div class="timeline-location">Sydney, Australia</div>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-role">Mechanical & Electrical Intern</div>
+            <div class="timeline-org">Inline Systems</div>
+            <ul class="timeline-bullets">
+              <li>Installed and configured equipment involving both mechanical and electrical systems</li>
+              <li>Designed CAD layouts and optimized spatial configurations for system components</li>
+              <li>Diagnosed and resolved system issues spanning software, electrical, and mechanical domains</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- USYD Rover -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-meta">
+            <div class="timeline-period">2024 — Present</div>
+            <div class="timeline-location">Sydney, Australia</div>
+          </div>
+          <div class="timeline-card">
+            <div class="timeline-role">Structural Team Member</div>
+            <div class="timeline-org">USYD Rover Team</div>
+            <ul class="timeline-bullets">
+              <li>Active member of the University of Sydney's competitive rover engineering team</li>
+              <li>Responsible for structural design and material selection considerations for rover components</li>
+              <li>Collaborating in a multidisciplinary team environment to meet engineering design constraints</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── PROJECTS ────────────────────────────────────────────────────────── -->
+  <section id="projects">
+    <div class="container">
+      <div class="section-label reveal">Engineering Work</div>
+      <h2 class="section-title reveal">Projects</h2>
+      <p class="reveal" style="color:var(--dim);max-width:560px;line-height:1.7;margin-bottom:0;">
+        From hypersonic flow simulations to hand-built UAVs — engineering challenges that span
+        theory and physical construction.
+      </p>
+
+      <div class="projects-grid reveal">
+
+        <!-- Featured: Hypersonic Missile — no images yet -->
+        <div class="project-card featured" data-project="missile">
+          <button class="gallery-btn empty" aria-label="View images" data-project="missile">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+          </button>
+          <div class="project-content">
+            <span class="project-badge">Published · AIAA 2023</span>
+            <h3 class="project-title">Analysis &amp; Optimisation of a Hypersonic Missile</h3>
+            <p class="project-desc">
+              Performed comprehensive CFD simulations on N1G missile geometry to assess aerodynamic
+              transitions across the supersonic-to-hypersonic Mach number regime. Applied shape
+              optimization techniques using ANSYS Fluent to improve aerodynamic efficiency and reduce
+              drag for high-speed flight. Results presented at the 25th AIAA International Space
+              Planes and Hypersonic Systems and Technologies Conference.
+            </p>
+            <div class="project-tags">
+              <span class="project-tag">ANSYS Fluent</span>
+              <span class="project-tag">ICEM CFD</span>
+              <span class="project-tag">Tecplot</span>
+              <span class="project-tag">Hypersonic Aerodynamics</span>
+              <span class="project-tag">Shape Optimization</span>
+              <span class="project-tag">N1G Geometry</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- WaveRider — no images yet -->
+        <div class="project-card" data-project="waverider">
+          <button class="gallery-btn empty" aria-label="View images" data-project="waverider">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+          </button>
+          <div class="project-content">
+            <span class="project-badge blue">IISc · 2024</span>
+            <h3 class="project-title">Designing a WaveRider &amp; Its Inlet System</h3>
+            <p class="project-desc">
+              Internship project at the Indian Institute of Sciences focused on designing a wave-rider
+              body and inlet system suitable for high-speed cruise at hypersonic regimes. Investigated
+              shock wave attachment conditions and inlet performance optimization for sustained Mach 5+
+              flight.
+            </p>
+            <div class="project-tags">
+              <span class="project-tag">WaveRider Design</span>
+              <span class="project-tag">Inlet Optimization</span>
+              <span class="project-tag">Mach 5+</span>
+              <span class="project-tag">IISc Research</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- UAV — 4 images attached -->
+        <div class="project-card" data-project="uav">
+          <button class="gallery-btn" aria-label="View images" data-project="uav">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <span class="img-count">4</span>
+          </button>
+          <div class="project-content">
+            <span class="project-badge blue">2023 – 2024</span>
+            <h3 class="project-title">UAV Design &amp; Development — 2 Aircraft</h3>
+            <p class="project-desc">
+              Designed and physically built two UAVs incorporating full structural and electrical
+              system integration. Hands-on experience with airframe construction, avionics wiring,
+              propulsion system selection, and flight testing. Each build represented end-to-end
+              engineering from concept to airworthy prototype.
+            </p>
+            <div class="project-tags">
+              <span class="project-tag">Airframe Design</span>
+              <span class="project-tag">Electrical Integration</span>
+              <span class="project-tag">Flight Testing</span>
+              <span class="project-tag">Propulsion Systems</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shape Memory Polymer — no images yet -->
+        <div class="project-card" data-project="smp">
+          <button class="gallery-btn empty" aria-label="View images" data-project="smp">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+          </button>
+          <div class="project-content">
+            <span class="project-badge" style="background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.2);color:#a78bfa;">Ongoing Research</span>
+            <h3 class="project-title">Shape Memory Polymer Development</h3>
+            <p class="project-desc">
+              Ongoing materials research studying epoxy-PCAL composite systems with varying glass
+              fiber (GF) and carbon fiber (CF) orientations. Investigating the thermomechanical
+              properties and shape recovery characteristics relevant to adaptive aerospace structures
+              and morphing wing applications.
+            </p>
+            <div class="project-tags">
+              <span class="project-tag">Epoxy-PCAL Composites</span>
+              <span class="project-tag">GF/CF Orientations</span>
+              <span class="project-tag">Materials Research</span>
+              <span class="project-tag">Adaptive Structures</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── PUBLICATIONS ────────────────────────────────────────────────────── -->
+  <section id="publications">
+    <div class="container">
+      <div class="section-label reveal">Research Output</div>
+      <h2 class="section-title reveal">Publications</h2>
+
+      <div class="pub-card reveal">
+        <div class="pub-year">2023</div>
+        <div>
+          <div class="pub-title">Aerodynamic Shape Optimization of a Hypersonic Missile Geometry</div>
+          <div class="pub-venue">25th AIAA International Space Planes and Hypersonic Systems and Technologies Conference</div>
+          <div class="pub-desc">
+            Numerical study investigating aerodynamic behavior of missile geometries at hypersonic
+            speeds. Performed CFD-based shape optimization using ANSYS Fluent to improve aerodynamic
+            efficiency and reduce drag for high-speed missile applications. Analysis spans the
+            supersonic-to-hypersonic transition range with focus on flow characteristics at Mach 5+.
+            Presented live at the prestigious AIAA international conference.
+          </div>
+        </div>
+        <div class="pub-badge">
+          <div class="badge-icon">🏆</div>
+          <span>AIAA<br/>Conference</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── EDUCATION ───────────────────────────────────────────────────────── -->
+  <section id="education">
+    <div class="container">
+      <div class="section-label reveal">Academic Background</div>
+      <h2 class="section-title reveal">Education</h2>
+
+      <div class="edu-grid reveal">
+        <div class="edu-card active">
+          <div class="edu-badge current">
+            <span style="width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+            Currently Enrolled
+          </div>
+          <div class="edu-degree">Master of Aerospace Engineering</div>
+          <div class="edu-uni">University of Sydney</div>
+          <div class="edu-period">Jul 2024 — Present · Sydney, Australia</div>
+          <div class="edu-detail">
+            Postgraduate specialization in advanced aerodynamics, structural analysis, and
+            multidisciplinary aerospace engineering systems. Active in USYD Rover Team structural
+            division and ongoing Shape Memory Polymer research.
+          </div>
+        </div>
+
+        <div class="edu-card">
+          <div class="edu-badge complete">Completed</div>
+          <div class="edu-degree">Bachelor of Technology<br/>Aerospace Engineering</div>
+          <div class="edu-uni">Ramaiah University of Applied Sciences</div>
+          <div class="edu-period">2020 — 2024 · Bengaluru, India</div>
+          <div class="edu-detail" style="margin-bottom:1rem;">
+            Comprehensive undergraduate training in aerodynamics, structural mechanics, propulsion,
+            and aerospace systems. Published research, presented at AIAA, and completed IISc
+            research internship during this period.
+          </div>
+          <div style="display:flex;align-items:baseline;gap:0.5rem;">
+            <div class="edu-cgpa">9.12</div>
+            <div style="font-size:0.8rem;color:var(--muted)">/ 10 CGPA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── CERTIFICATIONS ─────────────────────────────────────────────────── -->
+  <section id="certifications">
+    <div class="container">
+      <div class="section-label reveal">Credentials & Training</div>
+      <h2 class="section-title reveal">Certifications & Conferences</h2>
+
+      <div class="cert-grid reveal">
+        <div class="cert-item">
+          <div class="cert-icon">🚀</div>
+          <div class="cert-name">25th AIAA Space Planes & Hypersonic Systems Conference</div>
+          <div class="cert-source">AIAA · 2023 · Paper Presenter</div>
+        </div>
+
+        <div class="cert-item">
+          <div class="cert-icon">🔩</div>
+          <div class="cert-name">Linear Finite Elements</div>
+          <div class="cert-source">3-Day Technical Short Course · 2023</div>
+        </div>
+
+        <div class="cert-item">
+          <div class="cert-icon">📡</div>
+          <div class="cert-name">Radio Astronomy</div>
+          <div class="cert-source">Naxxatra Sciences × IISc · 2022</div>
+        </div>
+
+        <div class="cert-item">
+          <div class="cert-icon">🛰</div>
+          <div class="cert-name">Satellite Masterclass</div>
+          <div class="cert-source">STAR Insights · 2023</div>
+        </div>
+
+        <div class="cert-item">
+          <div class="cert-icon">🏭</div>
+          <div class="cert-name">Design Modelling & Simulation for Additive Manufacturing of Metals</div>
+          <div class="cert-source">Student Volunteer & Technical Coordinator</div>
+        </div>
+
+        <div class="cert-item">
+          <div class="cert-icon">🏅</div>
+          <div class="cert-name">Engineering Analysis for Product Development — Industry 4.0 Era</div>
+          <div class="cert-source">2-Day Symposium · Master of Ceremony</div>
+        </div>
+
+        <div class="cert-item">
+          <div class="cert-icon">💡</div>
+          <div class="cert-name">Institutional Innovation Council Activities</div>
+          <div class="cert-source">IIC Campus Innovation & Entrepreneurship Workshops</div>
+        </div>
+
+        <div class="cert-item">
+          <div class="cert-icon">🌠</div>
+          <div class="cert-name">Space Technology & Aeronautical Rocketry</div>
+          <div class="cert-source">Launch Vehicle Dynamics · Fundamental Rocketry</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── CONTACT ─────────────────────────────────────────────────────────── -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-wrapper">
+        <div class="section-label reveal" style="justify-content:center">Let's Connect</div>
+
+        <h2 class="contact-big reveal">
+          Ready to<br/>
+          <span style="background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Take Flight.</span>
+        </h2>
+
+        <p class="contact-sub reveal">
+          Whether you're looking for a driven aerospace engineer, a research collaborator,
+          or someone to help push the limits of what's aerodynamically possible — I'd love to hear from you.
+        </p>
+
+        <div class="contact-links reveal">
+          <a href="mailto:bhoomikaprasad2002@gmail.com" class="contact-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 01-2.06 0L2 7"/></svg>
+            bhoomikaprasad2002@gmail.com
+          </a>
+          <a href="tel:+61426790002" class="contact-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.29 6.29l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            0426 790 002
+          </a>
+          <a href="https://www.linkedin.com/" target="_blank" class="contact-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            LinkedIn
+          </a>
+        </div>
+
+        <div class="reveal" style="display:flex;justify-content:center;">
+          <a href="mailto:bhoomikaprasad2002@gmail.com" class="btn-primary" style="font-size:0.9rem;padding:1rem 2.5rem;">
+            Send a Message →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ──────────────────────────────────────────────────────────── -->
+  <footer>
+    <p style="font-family:var(--serif);font-size:0.95rem;font-style:italic;">© 2025 Bhoomika Prasad</p>
+    <p>Sydney, Australia · 12/05/2002</p>
+  </footer>
+
+  <!-- ── Lightbox ──────────────────────────────────────────────────────────── -->
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <div class="lb-backdrop" id="lb-backdrop"></div>
+    <div class="lb-shell">
+      <div class="lb-topbar">
+        <span class="lb-counter" id="lb-counter"></span>
+        <button class="lb-close" id="lb-close" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="lb-stage" id="lb-stage">
+        <button class="lb-arrow prev" id="lb-prev" aria-label="Previous">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="lb-image-wrap" id="lb-image-wrap">
+          <!-- image or empty state injected here -->
+        </div>
+        <button class="lb-arrow next" id="lb-next" aria-label="Next">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+
+      <p class="lb-caption" id="lb-caption"></p>
+      <div class="lb-dots" id="lb-dots"></div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────────────────────────────────── -->
+  <!-- THREE.JS + GSAP                                                        -->
+  <!-- ────────────────────────────────────────────────────────────────────── -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <script>
+  // ─── Custom Cursor ──────────────────────────────────────────────────────
+  const cursor = document.getElementById('cursor');
+  const ring   = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top  = my + 'px';
+  });
+
+  (function animateRing() {
+    rx += (mx - rx) * 0.35;
+    ry += (my - ry) * 0.35;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(animateRing);
+  })();
+
+  document.querySelectorAll('a, button, .skill-tag, .project-card, .cert-item, .stat-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width  = '20px';
+      cursor.style.height = '20px';
+      ring.style.width   = '60px';
+      ring.style.height  = '60px';
+      ring.style.borderColor = 'rgba(34,211,238,0.8)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width  = '12px';
+      cursor.style.height = '12px';
+      ring.style.width   = '40px';
+      ring.style.height  = '40px';
+      ring.style.borderColor = 'rgba(34,211,238,0.5)';
+    });
+  });
+
+  // ─── Three.js Space Background ─────────────────────────────────────────
+  (function initThree() {
+    const canvas   = document.getElementById('bg-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 2400);
+    camera.position.set(0, 0, 42);
+
+    const ambientLight = new THREE.AmbientLight(0xb8c4d6, 0.34);
+    scene.add(ambientLight);
+
+    const spaceRoot = new THREE.Group();
+    scene.add(spaceRoot);
+
+    const rand = (min, max) => min + Math.random() * (max - min);
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function createStarLayer(count, radiusMin, radiusMax, sizeMin, sizeMax, opacity) {
+      const positions = new Float32Array(count * 3);
+      const colors = new Float32Array(count * 3);
+      const colorPalette = [
+        [0.87, 0.96, 1.0],
+        [0.55, 0.85, 0.98],
+        [0.9, 0.9, 1.0],
+        [1.0, 0.88, 0.75],
+        [0.68, 0.95, 1.0],
+        [0.78, 0.52, 0.98]
+      ];
+
+      for (let i = 0; i < count; i++) {
+        const r = rand(radiusMin, radiusMax);
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+        positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+        positions[i * 3 + 2] = r * Math.cos(phi);
+
+        const c = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+        colors[i * 3] = c[0];
+        colors[i * 3 + 1] = c[1];
+        colors[i * 3 + 2] = c[2];
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      const material = new THREE.PointsMaterial({
+        size: rand(sizeMin, sizeMax),
+        sizeAttenuation: true,
+        vertexColors: true,
+        transparent: true,
+        opacity,
+        depthWrite: false
+      });
+
+      const points = new THREE.Points(geometry, material);
+      spaceRoot.add(points);
+      return points;
+    }
+
+    const farStars = createStarLayer(9500, 900, 1600, 0.5, 1.1, 0.45);
+    const nearStars = createStarLayer(3200, 500, 950, 0.8, 1.5, 0.2);
+
+    function createAsteroidGeometry(radius, detail) {
+      const geometry = new THREE.IcosahedronGeometry(radius, detail);
+      const position = geometry.attributes.position;
+      const vertex = new THREE.Vector3();
+
+      for (let i = 0; i < position.count; i++) {
+        vertex.fromBufferAttribute(position, i);
+        const noise = 1 + rand(-0.22, 0.24);
+        vertex.multiplyScalar(noise);
+        vertex.x += rand(-0.08, 0.08) * radius;
+        vertex.y += rand(-0.08, 0.08) * radius;
+        vertex.z += rand(-0.08, 0.08) * radius;
+        position.setXYZ(i, vertex.x, vertex.y, vertex.z);
+      }
+
+      geometry.computeVertexNormals();
+      return geometry;
+    }
+
+    // Wireframe color palettes for asteroids
+    const WIRE_COLORS  = [0x22d3ee, 0x8b5cf6, 0x0ea5e9, 0x38bdf8, 0x67e8f9, 0xa78bfa, 0xf0abfc, 0x6ee7f7];
+    const EMISSIVE_C   = [0x003344, 0x1a0a3b, 0x001e35, 0x00233a, 0x001a28, 0x150a28, 0x280a2a, 0x002030];
+
+    function pickWireColor() {
+      const idx = Math.floor(Math.random() * WIRE_COLORS.length);
+      return { color: WIRE_COLORS[idx], emissive: EMISSIVE_C[idx] };
+    }
+
+    function createAsteroid(scale = 1) {
+      const { color, emissive } = pickWireColor();
+      return new THREE.Mesh(
+        createAsteroidGeometry(2.2 * scale, 1),
+        new THREE.MeshPhongMaterial({
+          color,
+          emissive,
+          emissiveIntensity: 0.2,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.13 + Math.random() * 0.1,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+    }
+
+    function createPolyShard(radius, detail) {
+      const { color, emissive } = pickWireColor();
+      return new THREE.Mesh(
+        new THREE.OctahedronGeometry(radius, detail),
+        new THREE.MeshPhongMaterial({
+          color,
+          emissive,
+          emissiveIntensity: 0.15,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.08 + Math.random() * 0.08,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+    }
+
+    // Add a few larger "hero" wireframe shapes that float gracefully
+    const HERO_SHAPES = [
+      { geo: new THREE.IcosahedronGeometry(1.8, 0), pos: [14, 5, -14], rx: 0.0012, ry: 0.0018 },
+      { geo: new THREE.TorusGeometry(1.6, 0.32, 8, 28), pos: [-13, 4, -16], rx: 0.0015, rz: 0.0009 },
+      { geo: new THREE.DodecahedronGeometry(1.5, 0), pos: [-9, -5, -18], rx: -0.0009, ry: 0.0016 },
+      { geo: new THREE.OctahedronGeometry(1.5, 0), pos: [9, -4, -13], rx: 0.0022, ry: -0.0014 },
+    ];
+
+    const heroMeshes = [];
+    const heroLights = [];
+    const heroLight1 = new THREE.PointLight(0x00e8ff, 1.2, 60);
+    heroLight1.position.set(8, 8, 8);
+    scene.add(heroLight1);
+    heroLights.push({ light: heroLight1, base: 1.2, freq: 1.2, phase: 0 });
+
+    const heroLight2 = new THREE.PointLight(0x8b5cf6, 1.2, 60);
+    heroLight2.position.set(-8, -8, 8);
+    scene.add(heroLight2);
+    heroLights.push({ light: heroLight2, base: 1.2, freq: 0.9, phase: Math.PI });
+
+    HERO_SHAPES.forEach(({ geo, pos, rx: hrx, ry: hry, rz: hrz }) => {
+      const { color, emissive } = pickWireColor();
+      const mat = new THREE.MeshPhongMaterial({
+        color, emissive, emissiveIntensity: 0.22,
+        wireframe: true, transparent: true,
+        opacity: 0.18 + Math.random() * 0.1,
+        blending: THREE.AdditiveBlending, depthWrite: false,
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(...pos);
+      scene.add(mesh);
+      heroMeshes.push({ mesh, baseY: pos[1], hrx: hrx || 0, hry: hry || 0, hrz: hrz || 0, phase: Math.random() * Math.PI * 2, freq: 0.4 + Math.random() * 0.5 });
+    });
+
+    const floaters = [];
+
+    function registerFloater(mesh, options) {
+      const floater = {
+        mesh,
+        velocityX: options.velocityX,
+        velocityY: options.velocityY,
+        velocityZ: options.velocityZ || 0,
+        spinX: options.spinX,
+        spinY: options.spinY,
+        spinZ: options.spinZ,
+        resetX: options.resetX || 140,
+        resetYMin: options.resetYMin || -74,
+        resetYMax: options.resetYMax || 74,
+        minX: options.minX || -140,
+        minY: options.minY || -78,
+        maxY: options.maxY || 78
+      };
+      floaters.push(floater);
+      spaceRoot.add(mesh);
+      return floater;
+    }
+
+    for (let i = 0; i < 16; i++) {
+      const asteroid = createAsteroid(rand(0.35, 0.8));
+      asteroid.position.set(
+        rand(-110, 110),
+        rand(-62, 62),
+        rand(-180, -70)
+      );
+      registerFloater(asteroid, {
+        velocityX: rand(-0.02, -0.008),
+        velocityY: rand(-0.004, -0.0008),
+        velocityZ: rand(-0.003, 0.003),
+        spinX: rand(-0.0014, 0.0014),
+        spinY: rand(-0.0018, 0.0018),
+        spinZ: rand(-0.001, 0.001),
+        resetX: 138,
+        resetYMin: -66,
+        resetYMax: 66,
+        minX: -138,
+        minY: -72,
+        maxY: 72
+      });
+    }
+
+    for (let i = 0; i < 10; i++) {
+      const shard = createPolyShard(rand(1.5, 3.8), 0);
+      shard.position.set(
+        rand(-120, 120),
+        rand(-68, 68),
+        rand(-210, -90)
+      );
+      registerFloater(shard, {
+        velocityX: rand(-0.016, -0.006),
+        velocityY: rand(-0.0035, -0.0005),
+        velocityZ: rand(-0.002, 0.002),
+        spinX: rand(-0.0009, 0.0009),
+        spinY: rand(-0.0012, 0.0012),
+        spinZ: rand(-0.0013, 0.0013),
+        resetX: 146,
+        resetYMin: -72,
+        resetYMax: 72,
+        minX: -146,
+        minY: -78,
+        maxY: 78
+      });
+    }
+
+    const shootingStars = [];
+    function createShootingStar() {
+      const points = [
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(-16, -5, 0)
+      ];
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const material = new THREE.LineBasicMaterial({
+        color: 0x88ddff,
+        transparent: true,
+        opacity: 0.4
+      });
+      const line = new THREE.Line(geometry, material);
+      const startX = rand(90, 180);
+      const startY = rand(28, 85);
+      const velocity = new THREE.Vector3(rand(-1.6, -3.1), rand(-0.5, -1.1), 0);
+      line.position.set(startX, startY, rand(-120, -40));
+      line.rotation.z = Math.atan2(velocity.y, velocity.x);
+      scene.add(line);
+      shootingStars.push({
+        line,
+        velocity,
+        life: 0,
+        maxLife: 42 + Math.random() * 18
+      });
+    }
+
+    let mouseX = 0;
+    let mouseY = 0;
+    document.addEventListener('mousemove', e => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 1.1;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 1.1;
+    });
+
+    let frame = 0;
+    const clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      frame++;
+      const time = clock.getElapsedTime();
+      const scrollY = window.scrollY;
+      const motionScale = prefersReducedMotion ? 0.35 : 1;
+
+      farStars.rotation.y += 0.00008 * motionScale;
+      farStars.rotation.x += 0.00003 * motionScale;
+      farStars.rotation.x += ((-mouseY * 0.02) - farStars.rotation.x) * 0.016;
+      farStars.rotation.y += ((mouseX * 0.028) - farStars.rotation.y) * 0.016;
+
+      nearStars.rotation.y += 0.00014 * motionScale;
+      nearStars.rotation.x -= 0.00005 * motionScale;
+      nearStars.position.x += (((mouseX * 3) + Math.sin(time * 0.22) * 1.2) - nearStars.position.x) * 0.02;
+      nearStars.position.y += (((-mouseY * 2.4) + Math.cos(time * 0.18) * 1.2 - scrollY * 0.008) - nearStars.position.y) * 0.02;
+
+      // Mouse world-space repulsion origin (approximate, at z=-50 plane)
+      const mwx = mouseX * 24;
+      const mwy = -mouseY * 16;
+
+      floaters.forEach(item => {
+        item.mesh.rotation.x += item.spinX * motionScale;
+        item.mesh.rotation.y += item.spinY * motionScale;
+        item.mesh.rotation.z += item.spinZ * motionScale;
+
+        item.mesh.position.x += item.velocityX * motionScale;
+        item.mesh.position.y += item.velocityY * motionScale;
+        item.mesh.position.z += item.velocityZ * motionScale;
+
+        // Mouse repulsion: push asteroid away from cursor proximity
+        const dx = item.mesh.position.x - mwx;
+        const dy = item.mesh.position.y - mwy;
+        const distSq = dx * dx + dy * dy;
+        const repelRadius = 18;
+        if (distSq < repelRadius * repelRadius && distSq > 0.01) {
+          const dist  = Math.sqrt(distSq);
+          const force = (1 - dist / repelRadius) * 0.22 * motionScale;
+          item.mesh.position.x += (dx / dist) * force;
+          item.mesh.position.y += (dy / dist) * force;
+        }
+
+        if (item.mesh.position.x < item.minX || item.mesh.position.y < item.minY || item.mesh.position.y > item.maxY) {
+          item.mesh.position.x = item.resetX;
+          item.mesh.position.y = rand(item.resetYMin, item.resetYMax);
+          item.mesh.position.z = rand(-210, -70);
+        }
+      });
+
+      // Animate hero shapes
+      heroMeshes.forEach(h => {
+        h.mesh.rotation.x += h.hrx;
+        h.mesh.rotation.y += h.hry;
+        h.mesh.rotation.z += (h.hrz || 0);
+        h.mesh.position.y = h.baseY + Math.sin(time * h.freq + h.phase) * 0.6;
+        // Subtle mouse repulsion on hero shapes too
+        const hdx = h.mesh.position.x - mwx * 0.4;
+        const hdy = h.mesh.position.y - mwy * 0.4;
+        const hd  = Math.sqrt(hdx*hdx + hdy*hdy);
+        if (hd < 10 && hd > 0.01) {
+          h.mesh.position.x += (hdx / hd) * (1 - hd/10) * 0.08;
+        }
+      });
+
+      // Pulse hero lights
+      heroLights.forEach(hl => {
+        hl.light.intensity = hl.base + Math.sin(time * hl.freq + hl.phase) * 0.8;
+      });
+
+      camera.position.x += ((mouseX * 2.8) - camera.position.x) * 0.028;
+      camera.position.y += ((-mouseY * 1.8) - scrollY * 0.003 - camera.position.y) * 0.028;
+      camera.lookAt(spaceRoot.position.x, -scrollY * 0.002, -18);
+
+      if (frame % 260 === 0 && !prefersReducedMotion) createShootingStar();
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
+        const ss = shootingStars[i];
+        ss.life++;
+        ss.line.position.addScaledVector(ss.velocity, motionScale);
+        const progress = ss.life / ss.maxLife;
+        ss.line.material.opacity = progress < 0.25
+          ? progress / 0.25
+          : 1 - (progress - 0.25) / 0.75;
+        if (ss.life >= ss.maxLife) {
+          scene.remove(ss.line);
+          ss.line.geometry.dispose();
+          ss.line.material.dispose();
+          shootingStars.splice(i, 1);
+        }
+      }
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    });
+  })();
+
+  // ─── GSAP ScrollTrigger Reveals ─────────────────────────────────────────
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Reveal elements on scroll
+  document.querySelectorAll('.reveal').forEach((el, i) => {
+    gsap.fromTo(el,
+      { y: 20, opacity: 0 },
+      {
+        y: 0, opacity: 1,
+        duration: 0.45,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 92%',
+          once: true,
+        }
+      }
+    );
+  });
+
+  // Timeline items stagger
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    gsap.fromTo(el,
+      { x: 18, opacity: 0 },
+      {
+        x: 0, opacity: 1,
+        duration: 0.4,
+        delay: i * 0.06,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: el, start: 'top 92%', once: true }
+      }
+    );
+  });
+
+  // Skill cards stagger
+  document.querySelectorAll('.skill-category').forEach((el, i) => {
+    gsap.fromTo(el,
+      { y: 16, opacity: 0 },
+      {
+        y: 0, opacity: 1,
+        duration: 0.35,
+        delay: i * 0.05,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: el, start: 'top 92%', once: true }
+      }
+    );
+  });
+
+  // Project cards stagger
+  document.querySelectorAll('.project-card').forEach((el, i) => {
+    gsap.fromTo(el,
+      { y: 20, opacity: 0 },
+      {
+        y: 0, opacity: 1,
+        duration: 0.4,
+        delay: i * 0.07,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: el, start: 'top 92%', once: true }
+      }
+    );
+  });
+
+  // Cert items stagger
+  document.querySelectorAll('.cert-item').forEach((el, i) => {
+    gsap.fromTo(el,
+      { scale: 0.95, opacity: 0 },
+      {
+        scale: 1, opacity: 1,
+        duration: 0.3,
+        delay: i * 0.04,
+        ease: 'back.out(1.4)',
+        scrollTrigger: { trigger: el, start: 'top 92%', once: true }
+      }
+    );
+  });
+
+  // Nav active on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => {
+          link.style.color = link.getAttribute('href') === '#' + entry.target.id
+            ? 'var(--cyan)' : '';
+        });
+      }
+    });
+  }, { threshold: 0.4 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // ─── Parallax on hero elements ──────────────────────────────────────────
+  gsap.to('.hero-photo-wrapper', {
+    y: 60,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '#hero',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: 1,
+    }
+  });
+
+  gsap.to('.hero-content', {
+    y: 40,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '#hero',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: 1.5,
+    }
+  });
+
+  // ─── Stat counters ──────────────────────────────────────────────────────
+  // (static values, but animate them in)
+  document.querySelectorAll('.stat-num').forEach(el => {
+    gsap.from(el, {
+      opacity: 0,
+      y: 20,
+      duration: 0.8,
+      scrollTrigger: { trigger: el, start: 'top 85%', once: true }
+    });
+  });
+
+  // ─── Magnetic buttons ───────────────────────────────────────────────────
+  document.querySelectorAll('.btn-primary, .btn-outline').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const rect = btn.getBoundingClientRect();
+      const cx   = rect.left + rect.width  / 2;
+      const cy   = rect.top  + rect.height / 2;
+      const dx   = (e.clientX - cx) * 0.25;
+      const dy   = (e.clientY - cy) * 0.25;
+      gsap.to(btn, { x: dx, y: dy, duration: 0.3, ease: 'power2.out' });
+    });
+    btn.addEventListener('mouseleave', () => {
+      gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
+    });
+  });
+
+  // ─── Mobile nav toggle hint ─────────────────────────────────────────────
+  // (nav links hidden on mobile, could add hamburger here)
+
+  console.log('%c✈ Bhoomika Prasad — Aerospace Portfolio', 'color:#22d3ee;font-size:1.2rem;font-weight:bold;');
+  console.log('%cBuilt with Three.js + GSAP', 'color:#64748b;font-size:0.8rem;');
+
+  // ─── Project Gallery Lightbox ───────────────────────────────────────────
+  const PROJECT_MEDIA = {
+    missile:  [],   // add images here when available
+    waverider: [],  // add images here when available
+    uav: [
+      { src: 'https://i.postimg.cc/VNWqTZwD/Screenshot-2026-04-02-at-9-58-43-PM.png',      caption: 'UAV Build — Overview' },
+      { src: 'https://i.postimg.cc/cH1RN74R/Whats_App_Image_2026_04_02_at_16_08_16.jpg',    caption: 'UAV Build — Assembly' },
+      { src: 'https://i.postimg.cc/Y926wNqW/Whats_App_Image_2026_04_02_at_16_07_16.jpg',    caption: 'UAV Build — Detail' },
+      { src: 'https://i.postimg.cc/cLMt4KzR/Whats_App_Image_2026_04_02_at_16_07_30.jpg',    caption: 'UAV Build — Final Assembly' },
+    ],
+    smp: [],        // add images here when available
+  };
+
+  const lb          = document.getElementById('lightbox');
+  const lbWrap      = document.getElementById('lb-image-wrap');
+  const lbCounter   = document.getElementById('lb-counter');
+  const lbCaption   = document.getElementById('lb-caption');
+  const lbDots      = document.getElementById('lb-dots');
+  const lbPrev      = document.getElementById('lb-prev');
+  const lbNext      = document.getElementById('lb-next');
+  const lbClose     = document.getElementById('lb-close');
+  const lbBackdrop  = document.getElementById('lb-backdrop');
+
+  let lbImages = [], lbIdx = 0;
+
+  function lbRender(idx, dir = 0) {
+    lbIdx = idx;
+    const total = lbImages.length;
+
+    // Counter
+    lbCounter.textContent = total > 0 ? `${idx + 1} / ${total}` : '';
+
+    // Arrows
+    lbPrev.disabled = idx === 0;
+    lbNext.disabled = idx === total - 1;
+
+    // Dots
+    lbDots.innerHTML = '';
+    lbImages.forEach((_, i) => {
+      const d = document.createElement('button');
+      d.className = 'lb-dot' + (i === idx ? ' active' : '');
+      d.setAttribute('aria-label', `Go to image ${i + 1}`);
+      d.addEventListener('click', () => lbRender(i));
+      lbDots.appendChild(d);
+    });
+
+    // Animate out → swap → animate in
+    lbWrap.classList.add('sliding');
+    setTimeout(() => {
+      if (total === 0) {
+        lbWrap.innerHTML = `
+          <div class="lb-empty">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+              <line x1="4" y1="4" x2="20" y2="20" stroke-width="1.6"/>
+            </svg>
+            <h3>No images yet</h3>
+            <p>Images will appear here once they've been added to this project.</p>
+          </div>`;
+        lbCaption.textContent = '';
+      } else {
+        const item = lbImages[idx];
+        const img  = new Image();
+        img.src    = item.src;
+        img.alt    = item.caption || '';
+        img.onload = () => { lbWrap.classList.remove('sliding'); };
+        img.onerror = () => {
+          lbWrap.innerHTML = `<div class="lb-empty"><h3>Could not load image</h3></div>`;
+          lbWrap.classList.remove('sliding');
+        };
+        lbWrap.innerHTML = '';
+        lbWrap.appendChild(img);
+        lbCaption.textContent = item.caption || '';
+        // Fallback if already cached (onload won't fire)
+        if (img.complete) { lbWrap.classList.remove('sliding'); }
+      }
+    }, 180);
+  }
+
+  function lbOpen(projectId) {
+    lbImages = PROJECT_MEDIA[projectId] || [];
+    document.body.style.overflow = 'hidden';
+    lb.classList.add('open');
+    lbRender(0);
+  }
+
+  function lbCloseAll() {
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => { lbWrap.innerHTML = ''; lbDots.innerHTML = ''; }, 300);
+  }
+
+  lbClose.addEventListener('click', lbCloseAll);
+  lbBackdrop.addEventListener('click', lbCloseAll);
+  lbPrev.addEventListener('click', () => { if (lbIdx > 0) lbRender(lbIdx - 1, -1); });
+  lbNext.addEventListener('click', () => { if (lbIdx < lbImages.length - 1) lbRender(lbIdx + 1, 1); });
+
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape')     lbCloseAll();
+    if (e.key === 'ArrowLeft')  lbPrev.click();
+    if (e.key === 'ArrowRight') lbNext.click();
+  });
+
+  // Wire up all gallery buttons
+  document.querySelectorAll('.gallery-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      lbOpen(btn.dataset.project);
+    });
+  });
+
+  // Touch/swipe support on lightbox
+  let lbTouchX = null;
+  lbWrap.addEventListener('touchstart', e => { lbTouchX = e.touches[0].clientX; }, { passive: true });
+  lbWrap.addEventListener('touchend', e => {
+    if (lbTouchX === null) return;
+    const dx = e.changedTouches[0].clientX - lbTouchX;
+    if (Math.abs(dx) > 40) { dx < 0 ? lbNext.click() : lbPrev.click(); }
+    lbTouchX = null;
+  });
+  </script>
+</body>
+</html>
